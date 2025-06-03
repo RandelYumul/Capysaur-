@@ -158,9 +158,12 @@ def high_score_w(highscore):
         file.write(f"{highscore}")
 
 def ret_hs():
-    with open(filename, "r") as file:
-        highscore = file.read()
-        return highscore
+    try:
+        with open(filename, "r") as file:
+            highscore = file.read().strip()
+            return int(highscore) if highscore.isdigit() else 0
+    except Exception:
+        return 0
         
 #Background
 transition_start = None
