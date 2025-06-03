@@ -1,4 +1,14 @@
-import pygame, sys, random
+import pygame, sys, random, os
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 pygame.init()
 screen = pygame.display.set_mode((1280,720))
@@ -12,8 +22,8 @@ class Capy(pygame.sprite.Sprite):
         
         self.running_sprites = []
         
-        self.running_sprites.append(pygame.transform.scale(pygame.image.load("capy/capybara.png"),(100,100)))
-        self.running_sprites.append(pygame.transform.scale(pygame.image.load("capy/capybara.png"),(100,100)))
+        self.running_sprites.append(pygame.transform.scale(pygame.image.load(resource_path("capy/capybara.png")),(100,100)))
+        self.running_sprites.append(pygame.transform.scale(pygame.image.load(resource_path("capy/capybara.png")),(100,100)))
         
         self.x = x
         self.y = y
@@ -62,7 +72,7 @@ class Bush(pygame.sprite.Sprite):
         width = random.randint(90, 120)
         height = random.randint(45, 65)
         self.image = pygame.transform.scale(
-            pygame.image.load("capy/bush.png").convert_alpha(), 
+            pygame.image.load(resource_path("capy/bush.png")).convert_alpha(), 
             (width, height)
         )
         self.rect = self.image.get_rect(midbottom=(x, y))
@@ -79,7 +89,7 @@ class Bush(pygame.sprite.Sprite):
 class Bird(pygame.sprite.Sprite):
     def __init__(self, x, y, speed, upper_limit, lower_limit):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("capy/bird.png"), (60, 60)) 
+        self.image = pygame.transform.scale(pygame.image.load(resource_path("capy/bird.png")), (60, 60)) 
         self.rect = self.image.get_rect(midbottom=(x, y))
         self.speed_x = speed
         self.speed_y = 2
@@ -101,7 +111,7 @@ class Bird(pygame.sprite.Sprite):
 class Cloud(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         super().__init__()
-        original_image = pygame.image.load("capy/cloud.png").convert_alpha()
+        original_image = pygame.image.load(resource_path("capy/cloud.png")).convert_alpha()
 
         # Generate random width and height (scale)
         scale_factor = random.uniform(0.5, 1)  # You can adjust this range
@@ -128,12 +138,27 @@ def can_spawn_at_x(new_x, groups):
                 return False
     return True 
 
+
+filename = "highscore.txt"
+
+def ensure_file_has_value():
+    if os.path.isfile(filename):
+        with open(filename, "r+") as f:
+            content = f.read().strip()
+            if content == "":
+                f.seek(0)
+                f.write("0")
+                f.truncate()
+    else:
+        with open(filename, "w") as f:
+            f.write("0")
+            
 def high_score_w(highscore):
-    with open("highscore.txt", "w") as file:
+    with open(filename, "w") as file:
         file.write(f"{highscore}")
 
 def ret_hs():
-    with open("highscore.txt", "r") as file:
+    with open(filename, "r") as file:
         highscore = file.read()
         return highscore
         
@@ -153,7 +178,7 @@ bird_group = pygame.sprite.Group()
 cloud_group = pygame.sprite.Group()
 
 #Ground
-ground = pygame.image.load("capy/groundfinal.png")
+ground = pygame.image.load(resource_path("capy/groundfinal.png"))
 ground = pygame.transform.scale(ground, (1280,200))
 ground_x = 0
 # ground_rect = ground.get_rect(center=(640,400))
@@ -197,6 +222,7 @@ pygame.time.set_timer(CLOUD_EVENT, 3000)
 
 #Score
 score = 0
+ensure_file_has_value()
 highscore = int(ret_hs())
 font = pygame.font.Font(None, 50) 
 fonths = pygame.font.Font(None, 20) 
