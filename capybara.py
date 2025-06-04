@@ -1,9 +1,7 @@
 import pygame, sys, random, os
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
+    try: 
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
@@ -30,7 +28,7 @@ class Capy(pygame.sprite.Sprite):
         self.stand_y = y
         
         self.jump_velocity = 0
-        self.gravity = 0.3
+        self.gravity = 0.4
         self.is_jumping = False
         
         self.current_image = 0
