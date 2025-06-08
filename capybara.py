@@ -9,6 +9,9 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 pygame.init()
+pygame.mixer.init()
+
+pygame.init()
 screen = pygame.display.set_mode((1280,720))
 clock = pygame.time.Clock()
 pygame.display.set_caption("Capybara Game")
@@ -47,12 +50,16 @@ class Capy(pygame.sprite.Sprite):
             
         self.image = self.running_sprites[int(self.current_image)]
         self.mask = pygame.mask.from_surface(self.image) 
+        #Sound
+        self.jump_sound = pygame.mixer.Sound(resource_path("capy/jump.mp3"))  
+        self.jump_sound.set_volume(0.5)
     
     def jump(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and not self.is_jumping:
             self.jump_velocity = -12  
             self.is_jumping = True
+            self.jump_sound.play()
 
         self.jump_velocity += self.gravity
         self.y += self.jump_velocity
@@ -91,7 +98,7 @@ class Bird(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=(x, y))
         self.speed_x = speed
         self.speed_y = 2
-        self.direction = 1  # 1: down, -1: up
+        self.direction = 1 
         self.upper_limit = upper_limit
         self.lower_limit = lower_limit
         self.mask = pygame.mask.from_surface(self.image)
@@ -111,12 +118,11 @@ class Cloud(pygame.sprite.Sprite):
         super().__init__()
         original_image = pygame.image.load(resource_path("capy/cloud.png")).convert_alpha()
 
-        # Generate random width and height (scale)
-        scale_factor = random.uniform(0.5, 1)  # You can adjust this range
+        scale_factor = random.uniform(0.5, 1) 
         width = int(original_image.get_width() * scale_factor)
         height = int(original_image.get_height() * scale_factor)
 
-        # Resize the image with random scale
+
         self.image = pygame.transform.scale(original_image, (width, height))
         self.rect = self.image.get_rect(midbottom=(x, y))
 
@@ -295,7 +301,7 @@ while True:
         #         sys.exit()
     
     current_time = pygame.time.get_ticks()
-    if current_time - last_score_time >= 500 and game_active == True:  # 1000ms = 1 second
+    if current_time - last_score_time >= 500 and game_active == True: 
         score += 1
         last_score_time = current_time
     
