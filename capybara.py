@@ -10,11 +10,15 @@ def resource_path(relative_path):
 
 pygame.init()
 pygame.mixer.init()
+pygame.mixer.music.load(resource_path("capy/bg.ogg")) 
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(-1)
+fail_sound = pygame.mixer.Sound(resource_path("capy/fail.wav"))
+fail_sound.set_volume(0.5)
 
-pygame.init()
 screen = pygame.display.set_mode((1280,720))
 clock = pygame.time.Clock()
-pygame.display.set_caption("Capybara Game")
+pygame.display.set_caption("Capysaur Game")
 
 #Classes
 class Capy(pygame.sprite.Sprite):
@@ -51,7 +55,7 @@ class Capy(pygame.sprite.Sprite):
         self.image = self.running_sprites[int(self.current_image)]
         self.mask = pygame.mask.from_surface(self.image) 
         #Sound
-        self.jump_sound = pygame.mixer.Sound(resource_path("capy/jump.mp3"))  
+        self.jump_sound = pygame.mixer.Sound(resource_path("capy/jump.wav"))  
         self.jump_sound.set_volume(0.5)
     
     def jump(self):
@@ -404,12 +408,13 @@ while True:
     
     if pygame.sprite.spritecollide(capy_group.sprite, bush_group, False, pygame.sprite.collide_mask):
         game_active = False
+        fail_sound.play()
         bush_group.empty()
         
     if pygame.sprite.spritecollide(capy_group.sprite, bird_group, False, pygame.sprite.collide_mask):
         game_active = False
+        fail_sound.play()
         bird_group.empty()
-    
     
     pygame.display.update()
     clock.tick(120)
